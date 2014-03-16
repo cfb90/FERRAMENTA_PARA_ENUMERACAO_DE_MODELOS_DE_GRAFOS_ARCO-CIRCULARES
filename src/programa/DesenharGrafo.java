@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 public class DesenharGrafo extends JPanel {
 	private Color colors[];
 	Integer vertices;
-	HashSet<HashSet> arestas;
+	HashSet<Aresta> arestas;
 	ArrayList<Double[]> coordenadas;
 	public ArrayList<Double[]> getCoordenadas() {
 		return coordenadas;
@@ -26,7 +26,7 @@ public class DesenharGrafo extends JPanel {
 	public void setCoordenadas(ArrayList<Double[]> coordenadas) {
 		this.coordenadas = coordenadas;
 	}
-	public DesenharGrafo(Integer vertices,HashSet<HashSet> arestas){
+	public DesenharGrafo(Integer vertices,HashSet<Aresta> arestas){
 		this.vertices=vertices;
 		this.arestas=arestas;
 		Color inicio = new Color(255, 0, 0);
@@ -73,10 +73,10 @@ public class DesenharGrafo extends JPanel {
 			pontos.add(point);
 		}
 		graph.setStroke(b);
-		Iterator<HashSet> it= arestas.iterator();
+		Iterator<Aresta> it= arestas.iterator();
 		while (it.hasNext()) {
-			ArrayList<Integer> temp =new ArrayList<Integer>(it.next());
-			graph.draw(new Line2D.Double(pontos.get(temp.get(0)-1), pontos.get(temp.get(1)-1)));
+			Aresta temp =it.next();
+			graph.draw(new Line2D.Double(pontos.get(temp.vertice1-1), pontos.get(temp.vertice2-1)));
 		}
 		 
 		b= new BasicStroke(3);

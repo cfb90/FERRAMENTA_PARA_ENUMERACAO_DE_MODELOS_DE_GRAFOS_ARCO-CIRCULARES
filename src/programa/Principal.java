@@ -128,8 +128,7 @@ public class Principal {
 					temp = Integer.parseInt(textField_1.getText());
 					temp1 = Integer.parseInt(textField_2.getText());
 					if(temp > 0 && temp1>0 && temp!=temp1){
-						Aresta a;
-						a=new Aresta(temp,temp1);
+						Aresta a=new Aresta(temp,temp1);
 						textField_1.setText("");
 						textField_1.requestFocus();
 						textField_2.setText("");
@@ -324,9 +323,9 @@ public class Principal {
 				lblTestando.setText("0 de "+ maximo);
 				lblTestando.setVisible(true);
 				progressBar.setVisible(true);
-				final HashSet temp = new HashSet<HashSet>();
+				final HashSet temp = new HashSet<Aresta>();
 				for (int i = 0; i < arestas.size(); i++) {
-					temp.add(arestas.get(i).toHashSet());
+					temp.add(arestas.get(i));
 				}
 				int mostrar=0;
 				if(chckbxMostrarTodosOs.isSelected()) mostrar =1;

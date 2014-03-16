@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 class DesenharModelo extends JPanel{
 	private Color colors[];
 	ArrayList<Integer> permutacao;
-	HashSet<HashSet> arestas;
+	HashSet<Aresta> arestas;
 	ArrayList<Integer> raios;
 	int maiorRaio=0;
 	boolean pie=false;
@@ -26,7 +26,7 @@ class DesenharModelo extends JPanel{
 		return coordenadas;
 	}
 	int numPontos;
-	public DesenharModelo(ArrayList<Integer> permutacao,HashSet<HashSet> arestas){
+	public DesenharModelo(ArrayList<Integer> permutacao,HashSet<Aresta> arestas){
 		this.permutacao=permutacao;
 		this.arestas=arestas;
 		coordenadas = new ArrayList<Double[]>();
@@ -36,13 +36,12 @@ class DesenharModelo extends JPanel{
 			raios.add(i, 1);
 		}
 		for (int i = 1; i <= raios.size(); i++) {
-			for (Iterator<HashSet> iterator = arestas.iterator(); iterator.hasNext();) {
-				HashSet<Integer> temp= iterator.next();
-				Object[] t = temp.toArray();
-				if(t[0].equals(i) && raios.get((Integer)t[1]-1)<=raios.get((Integer)t[0]-1)){
-					raios.remove((Integer)t[1]-1);
-					raios.add((Integer)t[1]-1, raios.get((Integer)t[0]-1)+1);
-					if(raios.get((Integer)t[0]-1)+1>maiorRaio) maiorRaio=raios.get((Integer)t[0]-1)+1;
+			for (Iterator<Aresta> iterator = arestas.iterator(); iterator.hasNext();) {
+				Aresta temp= iterator.next();
+				if(temp.vertice1==i && raios.get(temp.vertice2-1)<=raios.get(temp.vertice1-1)){
+					raios.remove(temp.vertice2-1);
+					raios.add(temp.vertice2-1, raios.get(temp.vertice1-1)+1);
+					if(raios.get(temp.vertice2-1)>maiorRaio) maiorRaio=raios.get(temp.vertice2-1);
 				}
 			}
 		}

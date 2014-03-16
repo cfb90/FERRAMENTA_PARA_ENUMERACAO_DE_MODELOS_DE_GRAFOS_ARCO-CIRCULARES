@@ -19,13 +19,13 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 	JLabel progresso;
 	JProgressBar progre;
 	Fatorial fat;
-	HashSet<HashSet> arestas;
+	HashSet<Aresta> arestas;
 	BigInteger computados = BigInteger.ZERO;
 	BigInteger max;
 	int guardarTudo;
 	int normal=0;
 	int naoNormal=0;
-	public GerarModelos(int numPontos,HashSet<HashSet> arestas,JLabel progresso,JProgressBar progre,ArrayList<ArrayList> permutacoes,Fatorial fat,int guardarTudo) {
+	public GerarModelos(int numPontos,HashSet<Aresta> arestas,JLabel progresso,JProgressBar progre,ArrayList<ArrayList> permutacoes,Fatorial fat,int guardarTudo) {
 		this.arestas=arestas;
 		this.numPontos=numPontos;
 		this.progresso=progresso;
@@ -45,7 +45,7 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 		}
 		ArrayList<Integer> inicio = new ArrayList<Integer>();
 		inicio.add(menorCardinalidade(numPontos, arestas));
-		HashSet<HashSet> teste = new HashSet<HashSet>();
+		HashSet<Aresta> teste = new HashSet<Aresta>();
 		HashMap<Integer, Integer> pontos= new HashMap<Integer,Integer>();
 		//os arcos come�am dos n�meros positivos e v�o at� os negativos no sentido hor�rio
 		int t=0;
@@ -61,16 +61,16 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 		//return permutacoes;
 	}
 
-	public int menorCardinalidade(int numPontos,HashSet<HashSet> arestas){
+	public int menorCardinalidade(int numPontos,HashSet<Aresta> arestas){
 		HashMap<Integer, Integer> cardinalidade = new HashMap<Integer, Integer>(numPontos);
 		for (int i = 1; i <= numPontos; i++) {
 			cardinalidade.put(i, 0);
 		}
-		Iterator<HashSet> temp = arestas.iterator();
+		Iterator<Aresta> temp = arestas.iterator();
 		while(temp.hasNext()){
-			ArrayList<Integer> t = new ArrayList<Integer>(temp.next());
-			cardinalidade.put(t.get(0), cardinalidade.get(t.get(0))+1);
-			cardinalidade.put(t.get(1), cardinalidade.get(t.get(1))+1);
+			Aresta t = (Aresta) temp.next();
+			cardinalidade.put(t.vertice1, cardinalidade.get(t.vertice1)+1);
+			cardinalidade.put(t.vertice2, cardinalidade.get(t.vertice2)+1);
 		}
 		int retorno=1;
 		for (int i = 2; i <= numPontos; i++) {
@@ -81,7 +81,7 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 		return retorno;
 	}
 
-	public void gerarPermutacoes(int numPonto,ArrayList<Integer> conjunto,ArrayList<Integer> permutacaoParcial,HashSet<HashSet> arestas,HashSet<HashSet> teste,HashMap<Integer, Integer> pontos){
+	public void gerarPermutacoes(int numPonto,ArrayList<Integer> conjunto,ArrayList<Integer> permutacaoParcial,HashSet<Aresta> arestas,HashSet<Aresta> teste,HashMap<Integer, Integer> pontos){
 		if(permutacaoParcial.size()==conjunto.size()) {
 			if(guardarTudo==1){
 				ArrayList<Integer> temp = new ArrayList<Integer>();
@@ -107,15 +107,14 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 			publish(computados);
 			return;
 		}
-		ArrayList<Integer> conjuntoT = new ArrayList<>(conjunto);
 		for (int j = 0; j < numPonto*2; j++) {
-			if(permutacaoParcial.contains(conjuntoT.get(j))){
+			if(permutacaoParcial.contains(conjunto.get(j))){
 				continue;
 			}
 			else{
 				if(normal==1 && naoNormal==1) return;
-				permutacaoParcial.add(conjuntoT.get(j));
-				HashSet<HashSet> t = new HashSet<HashSet>();
+				permutacaoParcial.add(conjunto.get(j));
+				HashSet<Aresta> t = new HashSet<Aresta>();
 				t.addAll(teste);
 				HashMap<Integer, Integer> p= new HashMap<Integer,Integer>(pontos);
 				if(TesteArco(numPonto,permutacaoParcial, arestas,t,p)){
@@ -138,7 +137,7 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 		progre.setValue(Integer.valueOf(t));
 	}
 
-	public boolean TesteArco(int numPontos,ArrayList<Integer> arcos,HashSet<HashSet> arestas,HashSet<HashSet> teste,HashMap<Integer, Integer> pontos){
+	public boolean TesteArco(int numPontos,ArrayList<Integer> arcos,HashSet<Aresta> arestas,HashSet<Aresta> teste,HashMap<Integer, Integer> pontos){
 		//os arcos come�am dos n�meros positivos e v�o at� os negativos no sentido hor�rio
 		int t=0;
 		//seta os arcos que come�aram para saber que come�aram
@@ -146,26 +145,20 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 			t=arcos.get(arcos.size()-1);
 			for (int j = 1; j <= numPontos; j++) {
 				if(pontos.get(j)==-1){
-					HashSet<Integer> temp= new HashSet<Integer>();
-					temp.add(t);
-					temp.add(j);
+					Aresta temp= new Aresta(t, j);
 					if(arestas.contains(temp) && !teste.contains(temp)){
 						return false;
 					}
 				}
 				else if(pontos.get(j)==1){
-					HashSet<Integer> temp= new HashSet<Integer>();
-					temp.add(t);
-					temp.add(j);
+					Aresta temp= new Aresta(t, j);
 					if(!arestas.contains(temp)) return false;
 					else {
 						teste.add(temp);
 					}
 				}
 				else if(pontos.get(t)==2 && pontos.get(j)==0){
-					HashSet<Integer> temp= new HashSet<Integer>();
-					temp.add(t);
-					temp.add(j);
+					Aresta temp= new Aresta(t, j);
 					if(!arestas.contains(temp)) return false;
 				}
 			}
@@ -178,32 +171,22 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 			t=-arcos.get(arcos.size()-1);
 				for (int j = 1; j <= numPontos; j++) {
 					if(pontos.get(j)==2){
-						HashSet<Integer> temp= new HashSet<Integer>();
-						temp.add(t);
-						temp.add(j);
+						Aresta temp= new Aresta(t, j);
 						if(arestas.contains(temp) && !teste.contains(temp)){
 							return false;
 						}
 					}
 					else if(pontos.get(j)==0){
-						HashSet<Integer> temp= new HashSet<Integer>();
-						temp.add(t);
-						temp.add(j);
+						Aresta temp= new Aresta(t, j);
 						if(arestas.contains(temp)){
 							for (int i = 1; i <= numPontos; i++) {
 								if(pontos.get(i)!=0){
-									HashSet<Integer> temp1= new HashSet<Integer>();
-									temp1.add(j);
-									temp1.add(i);
+									Aresta temp1= new Aresta(j, i);
 									if(!arestas.contains(temp1)) return false;
 								}
 								else if(i!=j){
-									HashSet<Integer> temp1= new HashSet<Integer>();
-									temp1.add(t);
-									temp1.add(i);
-									HashSet<Integer> temp2= new HashSet<Integer>();
-									temp2.add(j);
-									temp2.add(i);
+									Aresta temp1= new Aresta(t, i);
+									Aresta temp2= new Aresta(j, i);
 									if(arestas.contains(temp1) && !arestas.contains(temp2)) return false;
 								}
 							}
@@ -217,9 +200,7 @@ public class GerarModelos extends SwingWorker<Void , BigInteger>{
 			t=-arcos.get(arcos.size()-1);
 			for (int j = 1; j <= numPontos; j++) {
 				if(pontos.get(j)!=0){
-					HashSet<Integer> temp= new HashSet<Integer>();
-					temp.add(t);
-					temp.add(j);
+					Aresta temp= new Aresta(t, j);
 					if(!arestas.contains(temp)) return false;
 					else {
 						teste.add(temp);

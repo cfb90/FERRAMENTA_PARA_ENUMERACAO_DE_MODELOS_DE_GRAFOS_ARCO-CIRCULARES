@@ -56,7 +56,7 @@ public class Controles extends JFrame {
 	 * @throws IOException 
 	 * @throws NumberFormatException 
 	 */
-	public Controles(int numPontos,HashSet<HashSet> arestas, final ArrayList<ArrayList> permutacoes) throws NumberFormatException, IOException {
+	public Controles(int numPontos,HashSet<Aresta> arestas, final ArrayList<ArrayList> permutacoes) throws NumberFormatException, IOException {
 		setTitle("Controle dos Modelos");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -284,25 +284,23 @@ public class Controles extends JFrame {
 		textArea.setEditable(false);
 		scrollPane_1.setViewportView(textArea);
 
-		List<HashSet> tmp = new ArrayList<HashSet>(arestas);
-		Collections.sort(tmp, new Comparator<HashSet>() {
+		List<Aresta> tmp = new ArrayList<Aresta>(arestas);
+		Collections.sort(tmp, new Comparator<Aresta>() {
 
 			@Override
-			public int compare(HashSet arg0, HashSet arg1) {
+			public int compare(Aresta arg0, Aresta arg1) {
 				// TODO Auto-generated method stub
-				Iterator<Integer> t = arg0.iterator();
-				Iterator<Integer> t2 = arg1.iterator();
-				Integer i=t.next();
-				Integer i2=t2.next(); 
+				
+				Integer i=arg0.vertice1;
+				Integer i2=arg1.vertice1; 
 				return i.compareTo(i2);
 			}
 		});
-		Iterator<HashSet> t = tmp.iterator();
+		Iterator<Aresta> t = tmp.iterator();
 		if(t.hasNext())	textArea.setText(t.next()+"");
 		while(t.hasNext()){
 			textArea.setText(textArea.getText()+"\n"+t.next());
 		}
-
 		final JButton btnCorInicial = new JButton("Cor Inicial");
 		btnCorInicial.setBackground(colors[0]);
 		btnCorInicial.addActionListener(new ActionListener() {
